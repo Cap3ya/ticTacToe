@@ -1,0 +1,93 @@
+<html lang="en">
+    <h2>Player's turn: <span id="playerTurn"></span></h2>
+    <table id="gameBoard">
+        <tbody>
+            <tr>
+                <td id="0"></td>
+                <td id="1" class="y"></td>
+                <td id="2"></td>
+            </tr>
+            <tr>
+                <td id="3" class="x"></td>
+                <td id="4" class="x y"></td>
+                <td id="5" class="x"></td>
+            </tr>
+            <tr>
+                <td id="6"></td>
+                <td id="7" class="y"></td>
+                <td id="8"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div hx-get="./results.html" hx-trigger="click" hx-target="main"></div>
+</html>
+
+<script>
+//Reset
+Game.resetState();
+player1.resetCombination();
+player2.resetCombination();
+
+// Display whose turn
+document.querySelector('#playerTurn').innerText = Flow.whoseTurn().character
+// If robot turn then random click
+if ( Flow.whoseTurn() == player2 && player2.isRobot() ) {
+    const id = Math.floor(Math.random() * (8 + 1))
+    Game.state[id] = player2.character
+    player2.combination.push(Number(id))
+    Game.renderState()
+    Flow.incTurn()
+    document.querySelector('#playerTurn').innerText = Flow.whoseTurn().character
+
+}
+// Listen onClicks
+onClick('td', element => {
+    // Only empty td is a valid click 
+    if (!element.textContent) { 
+        // Whose turn ? 
+        player = Flow.whoseTurn();
+        // Get td's ID and player's character to populate the board
+        Game.setState(element, player)
+        // Get td's ID for each player to find winning combination
+        player.getCombination(element)
+        // Next turn
+        Flow.incTurn()
+        // Whose turn ? 
+        player = Flow.whoseTurn();
+        // Display whose turn
+        document.querySelector('#playerTurn').innerText = player.character
+        // If win or tie then request next page (results.html)
+        if ( player1.hasWinningCombination() ) {
+            htmx.trigger('div', 'click');
+            player1.incrementScore();
+            result = player1;
+        } else if ( player2.hasWinningCombination() ) {
+            htmx.trigger('div', 'click');
+            player2.incrementScore();
+            result = player2;
+        } else if (Game.progress() == 9) {
+            htmx.trigger('div', 'click');
+            result = "tie";
+        } else if (player2.isRobot() && Flow.whoseTurn() == player2) {
+            document.getElementById(bestMove()).click();
+        }
+    }});
+</script>
+
+<style>
+    td {
+        text-align: center;
+        font-size: 2.5rem;
+        height: 5rem;
+        width: 5rem;
+    }
+    .x {
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+    .y {
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+    }
+</style>
+

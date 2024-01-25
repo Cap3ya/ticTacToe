@@ -1,0 +1,57 @@
+<html lang="en">
+    <h2>Results</h2>
+
+    <table id="gameBoard">
+        <tbody>
+            <tr>
+                <td id="0"></td>
+                <td id="1"></td>
+                <td id="2"></td>
+            </tr>
+            <tr>
+                <td id="3"></td>
+                <td id="4"></td>
+                <td id="5"></td>
+            </tr>
+            <tr>
+                <td id="6"></td>
+                <td id="7"></td>
+                <td id="8"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 id="st"></h3>
+    <p id="nd"></p>
+
+    <div class="buttons">
+        <button hx-get="./characters.html" hx-trigger="click" hx-target="main">
+            <p>Change your Character</p>
+        </button>
+        <button hx-get="./gameboard.html" hx-trigger="click" hx-target="main">
+            <p>Restart the Game</p>
+        </button>
+    </div>
+    </body>
+</html>
+
+<style>
+    .buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem
+    }
+</style>
+
+<script>
+    Game.renderState()
+    if (result == player1) {
+        document.querySelector('#st').innerText = `${player1.character} has ${player1.score} ${player1.score > 1 ? "victories" : "victory"}`
+        document.querySelector('#nd').innerText = `${player2.character} has ${player2.score} ${player2.score > 1 ? "victories" : "victory"}`
+    } else if (result == player2) {
+        document.querySelector('#st').innerText = `${player2.character} has ${player2.score} ${player2.score > 1 ? "victories" : "victory"}`
+        document.querySelector('#nd').innerText = `${player1.character} has ${player1.score} ${player1.score > 1 ? "victories" : "victory"}`
+    } else {
+        document.querySelector('#st').innerText = "It's a tie"
+    }
+</script>

@@ -1,0 +1,104 @@
+<html lang="en">
+    <h2>Pick your Character</h2> 
+
+    <div id="playersCharacter">
+        <div class="flex-column" style="gap: 1em">
+            <h3 id="player1Name" class="players">Player1</h3>
+            <div id="player1Character" class="playersCharacter">x</div>
+        </div>
+        <div class="flex-column" style="gap: 1em">
+            <h3 id="player2Name" class="players">Player2</h3>
+            <div id="player2Character" class="playersCharacter">o</div>
+        </div>
+    </div>
+
+    <div id="characters">
+        <div class="character">&#128540;</div>
+        <div class="character">&#128568;</div>
+        <div class="character">&#128060;</div>
+        <div class="character">&#128520;</div>
+        <div class="character">&#128142;</div>
+        <div class="character">&#127808;</div>
+        <div class="character">&#129412;</div>
+        <div class="character">&#128056;</div>
+        <div class="character">&#129312;</div>
+    </div>
+
+    <h3>Let the Bot be player2</h3>
+    <div id="robot"class="character">&#129302;</div>
+    
+    <button hx-get="./gameboard.html" hx-trigger="click" hx-target="main" disabled>
+        Player 1 <br> Pick your Character
+    </button>
+</html>
+
+<style>
+#playersCharacter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4em;
+}
+.playersCharacter {
+    font-size: 2.5rem;
+    height: 3rem;
+    width: 3rem;
+}
+#characters {
+    display: grid;
+    grid-template-columns: repeat(3, 4rem);
+    grid-template-rows: repeat(3, 4rem);
+    justify-items: center;
+    align-items: center;
+}
+.character,
+#robot {
+    font-size: 2rem;
+    &:is(:hover, :active, :focus) {
+        border-bottom: 2px solid black;
+        cursor: pointer;
+        transform: translateY(-0.1rem)
+}}
+button:disabled {
+        background-color: black;
+}
+.flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+
+<script>
+//Give turn to P1
+Flow.resetTurn()
+
+// Listen for click on Characters
+onClick('.character', item => {
+    // Whose turn ? Default: P1
+    let player = Flow.whoseTurn();
+    // P1 can't pick the robot
+    if ( !(Flow.whoseTurn() == player1 && item.textContent.codePointAt() == 129302) ) {
+        // Set player.character
+        player.setCharacter(item);
+        // Display player.character on the Page
+        document.querySelector(`#${player.name}Character`).innerText = player.character
+
+        // Give turn to next player. 
+        Flow.incTurn()
+
+        // Enable Button's startGame 
+        let [p1Char, p2Char] = document.querySelectorAll('.playersCharacter');
+        if (p1Char.textContent != "x" && p2Char.textContent != "o") {
+            document.querySelector('button').disabled = false
+        }
+        
+        // Player's Guidelines
+        document.querySelector('button').innerHTML = p2Char.textContent == "o" ? 
+        'Player 2 <br/> Pick your Character' :
+        "Start the Game";
+    };
+})
+</script>
